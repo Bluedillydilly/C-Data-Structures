@@ -73,38 +73,41 @@ void* sllist_remove( sllist* sll, uint index )
 {
     if ( index >= sll->length ) // check if valid index
     {
-        fprintf(stderr, "Out of Bounds SLL: (%d) Max: (%d)\n", index, sll->length);
+        fprintf(stderr, "Removal Index Out of Bounds SLL: (%d) Max: (%d)\n", index, sll->length);
         return NULL;
     }
-    if ( index == 0 ) // check if removing head
-    {
-        sll_node* old = sll->head;
-        void* val = old->val;
-        sll_node* next = old->next;
-        free(old->val);
-        free(old);
-        sll->head = next;
-        sll->length--;
-        return val;
-    }
+
     sll_node* node = sll->head;
-    for ( uint i = 0; i < index - 1; i++ ) 
+    for ( uint i = 1; i < index ; i++ ) 
     {
         node = node -> next;
     }
-    // node = index - 1 node
-    // want: index - 1 -> index + 1
-    sll_node* old = node->next;
+    // node = index - 1
+    // want: index - 1 ---> index + 1
+    sll_node* old;
+    if ( index == 0 )
+    {
+        old = node;
+    }
+    else
+    {
+        old = node->next;
+    }
     void* val = old->val;
     node->next = old->next;
-    free(old->val);
-    free(old);
     
     sll->length--;
-    if ( index == sll->length ) // check if removing tail
+    if ( index == 0 )
+    {
+        sll->head = node->next;
+
+    }
+    else if ( index == sll->length ) // check if removing tail
     {
         sll->tail = node;
     }
+
+    free(old);
     return val;
 }
 
@@ -128,7 +131,7 @@ void sllist_printi( sllist* sll )
     printf("Singly Linked Int List (%d): ", sll->length );
     sll_node* node = sll->head;
     uint i = 0;
-    while (i < sll->length)
+    while (i < sll->length )
     {
         // cast as int pointer, then de-ref
         printf("%d, ", *((int *) node->val));
